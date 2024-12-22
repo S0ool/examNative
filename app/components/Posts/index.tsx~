@@ -1,0 +1,71 @@
+import React, { useEffect, useState, useRef } from "react";
+import {
+    FlatList,
+    Animated,
+    View,
+    Easing,
+} from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Post } from "@/app/components/Posts/Post";
+
+export const Posts = ({ posts }: any) => {
+    const [userLikes, setUserLikes] = useState<any[]>([]);
+    const animatedValues = useRef(posts.map(() => new Animated.Value(0))).current;
+
+    useEffect(() => {
+        // Load userLikes from AsyncStorage
+        const loadUserLikes = async () => {
+            const localUserLikes = await AsyncStorage.getItem('userLikes');
+            if (localUserLikes) {
+                setUserLikes(JSON.parse(localUserLikes));
+            } else {
+                const localUserLikes = posts.map(() => 0);
+                setUserLikes(localUserLikes);
+            }
+        };
+        loadUserLikes();
+    }, [posts]);
+
+    useEffect(() => {
+        // Animate posts appearance
+        Animated.stagger(
+            150,
+            animatedValues.map((animValue) =>
+                Animated.timing(animValue, {
+                    toValue: 1,
+                    duration: 500,
+                    easing: Easing.ease,
+                    useNativeDriver: true,
+                })
+            )
+        ).start();
+    }, [animatedValues]);
+
+    const renderItem = ({ item, index }: { item: any, index: number }) => {
+        const animationStyle = {
+            opacity: animatedValues[index],
+            transform: [
+                {
+                    translateY: animatedValues[index].interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [20, 0],
+                    }),
+                },
+            ],
+        };
+
+        return (
+            <Animated.View style={animationStyle}>
+                <Post post={item} setLikes={setUserLikes} likes={userLikes} id={item.id} />
+            </Animated.View>
+        );
+    };
+
+    return (
+        <FlatList
+            data={posts}
+            renderItem={renderItem}
+            keyExtractor={(item: any) => item.id.toString()}
+        />
+    );
+};

@@ -1,0 +1,35 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "password": "password123"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "password": "password456"
+    },
+    {
+      "id": 3,
+      "name": "Michael Johnson",
+      "password": "password789"
+    },
+    {
+      "id": 4,
+      "name": "Emily Davis",
+      "password": "password101"
+    },
+    {
+      "id": 5,
+      "name": "David Brown",
+      "password": "password202"
+    },
+    {
+      "id": 6,
+      "name": "admin",
+      "password": "111"
+    }
+
+  ]
+}

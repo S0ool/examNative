@@ -1,0 +1,88 @@
+import {Button, FlatList, ScrollView, SectionList, StyleSheet, Text, TextInput, View} from "react-native";
+import { useAuth } from "@/app/hooks/useAuth";
+import React, {useEffect, useState} from "react";
+import {Redirect} from "expo-router";
+import {Post} from "@/app/components/Posts/Post";
+// https://cdn.pixabay.com/photo/2015/10/07/12/17/post-976115_1280.png
+
+const AdminPage = ({ user }: any) => {
+    const [userPosts, setUserPosts] = useState([]);
+    const [postTitle, setPostTitle] = useState('');
+    const [desc, setDesc] = useState('');
+    const [img, setImg] = useState('');
+    const {posts,setPosts} = useAuth();
+    useEffect(() => {
+        const userPosts = posts.filter((post: any) => post.user == user.name);
+        setUserPosts(userPosts);
+    }, [posts]);
+    const createPost = () => {
+        const newPost = {id:posts.length + 1, title:postTitle,description:desc,image:img,user:user.name};
+        setPosts([...posts,newPost]);
+
+    }
+    return (
+        <>
+            <View>
+            <TextInput
+                style={styles.input}
+                onChangeText={setPostTitle}
+                    value={postTitle}
+                placeholder="post title"
+            />
+            <TextInput
+                style={styles.input}
+                onChangeText={setDesc}
+                value={desc}
+                placeholder="description"
+            />
+            <TextInput
+                style={styles.input}
+                onChangeText={setImg}
+                value={img}
+                placeholder="image url"
+            />
+            <Button
+                title="Create"
+                color= '#6828c1'
+                onPress={() => {createPost()}}
+            />
+        </View>
+            <FlatList data={userPosts} renderItem={({item}) => <Post admin={true} post={item} setLikes={setUserPosts} likes={userPosts} id={item.id}/>}/>
+
+        </>
+
+
+
+    );
+
+}
+
+
+export default function Basket() {
+    const { user } = useAuth();
+    return (
+        <ScrollView>
+            {!user ? <Redirect href={'/components/Profile/Profile'} /> : <AdminPage user={user} />}
+
+        </ScrollView>
+    );
+}
+const styles = StyleSheet.create({
+    input: {
+        height: 40,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
+        color: ''
+    },
+    button: {
+        backgroundColor: 'rgba(255,255,255,0)',
+        padding: 10,
+        margin: 10,
+        borderRadius: 10,
+    },
+    buttonText: {
+        color: '#6828c1'
+    }
+
+});
